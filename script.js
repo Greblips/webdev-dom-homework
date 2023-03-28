@@ -8,6 +8,13 @@ const commentInputElement = document.getElementById("comment-input");
 const mainForm = document.querySelector(".add-form");
 const studentElements = document.querySelectorAll(".comment");
 const likeButton = document.querySelectorAll(".like-button");
+const textarea = document.querySelectorAll('.add-form-text')
+const waitLoadComments = document.getElementById("loaderComments");
+const pushComments = document.getElementById("PushCommentsText");
+
+
+pushComments.style.display = "none"
+waitLoadComments.style.display = "flex";
 
 // функция для даты
 function getDate(date) {
@@ -23,55 +30,57 @@ function getDate(date) {
 }
 
 
-let comments = [{
-    date: getDate(new Date),
-    likes: '0',
-    text: "",
-    author: { name: '' },
-    isLiked: false,
-    isEdit: false,
-   
-}
-];
-renderComments();
+ let comments = [];
 
 
 
-
-const fetchPromise = fetch("https://webdev-hw-api.vercel.app/api/v1/Kerimov-Evgeny/comments", {
+// функция Данные с сервера
+const fetchAndRenderTasks = () =>{
+ return fetch("https://webdev-hw-api.vercel.app/api/v1/Kerimov-Evgeny/comments", {
   method: "GET"
-});
-
-fetchPromise.then((response) => {
-  const jsonPromise = response.json();
-  jsonPromise.then((responseData) => {
+})
+  .then((response) => {
+   return response.json()
+  })
+  .then((responseData) => {
     comments = responseData.comments;
-   renderComments()
-  });
-});
+  
+  })
+  .then(()=>{
+    renderComments();
+    waitLoadComments.style.display = "none";
+  })
+ 
 
+}
+
+fetchAndRenderTasks()
 
 
 
 // Функция удаления последнего комментария
 function delComment() {
- 
   comments.pop()
     renderComments();
-
 }
 
 // Отчистка данных с поля
-
 function delValue() {
   nameInputElement.value = "";
   commentInputElement.value = "";
 };
 
+// Функция для имитации запросов в API
+
+function delay(interval = 300) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, interval);
+  });
+}
 
 
-
-// Добавление лайка
 
 function addLike () {
   const likeButtons = listElement.querySelectorAll('.like-button');
@@ -80,17 +89,18 @@ function addLike () {
     likeButton.addEventListener('click', ( event) => {
       event.stopPropagation()
           const index = likeButton.dataset.index;
-
-          if (comments[index].isLiked === false) {
-            comments[index].isLiked = true;
-            comments[index].likes +=1;
-
-          } else if (comments[index].isLiked === true){
-            comments[index].isLiked = false;
-            comments[index].likes -=1;
-          }
-
-          renderComments();
+          likeButton.classList.add('-loading-like')
+          delay(2000).then(()=> {
+           
+            if (comments[index].isLiked === false) {
+              comments[index].isLiked = true;
+              comments[index].likes +=1;
+            } else {
+              comments[index].isLiked = false;
+              comments[index].likes -=1;
+            }
+            renderComments();
+          })
 
       })
   }
@@ -184,8 +194,6 @@ function renderComments() {
  
 }
 
-
-
 renderComments();
 
 
@@ -198,50 +206,45 @@ addComment.addEventListener("click", () => {
     commentInputElement.classList.add("error");
     nameInputElement.placeholder = 'Введите имя';
     commentInputElement.placeholder = 'Введите комментарий';
+    
+   
     buttonBlock()
-    return;
-  } else{
-    renderComments();
+    return;  
+  } 
+  // Выключение  формы
+
+  pushComments.style.display = "flex";
+  mainForm.style.display = "none";
+  console.log(mainForm)
+
     fetch('https://webdev-hw-api.vercel.app/api/v1/Kerimov-Evgeny/comments', {
-            method: "POST",
+    method: "POST",
 
-            body: JSON.stringify({
-                date: new Date,
-                likes: 0,
-                isLiked: false,
-                text: safeInputText(commentInputElement.value),
-                name: safeInputText(nameInputElement.value),
-            })
+    body: JSON.stringify({
+        date: new Date,
+        likes: 0,
+        isLiked: false,
+        text: safeInputText(commentInputElement.value),
+        name: safeInputText(nameInputElement.value),
+      }),
 
-        }).then((response) => {
-          const fetchPromise = fetch("https://webdev-hw-api.vercel.app/api/v1/Kerimov-Evgeny/comments", {
-            method: "GET"
-          });
-          
-          fetchPromise.then((response) => {
-            const jsonPromise = response.json();
-            jsonPromise.then((responseData) => {
-              comments = responseData.comments;
-             renderComments()
-            });
-          });
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then (() =>{
+       return fetchAndRenderTasks()
+      })
+      .then(()=>{
+        mainForm.style.display = "flex";
+        pushComments.style.display = "none"
+      })
 
-            response.json().then((responseData) => {
-                renderComments();
-            })
-        });
-  
-      }
- 
     nameInputElement.classList.remove("error");
     commentInputElement.classList.remove("error");
     const oldListHtml = listElement.innerHTML;
-
-
-  
   renderComments();
-  delValue() 
-
+  delValue(); 
 });
 
 
@@ -267,14 +270,14 @@ const buttonBlock = () => {
 
 
 // Ввод по нажатию клавиши Enter
-mainForm.addEventListener('keyup', (e) => {
-  if (e.code === "Enter") {
+mainForm.addEventListener('keyup', (event) => {
+
+  if (event.code === "Enter"  ) {
     addComment.click();
+   
     delValue();
   }
 });
-
-
 
 
 
