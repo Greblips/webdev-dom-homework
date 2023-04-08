@@ -1,5 +1,5 @@
 const host = "https://webdev-hw-api.vercel.app/api/v2/Kerimov-Evgenii/comments";
-let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+let token = null;
 
 
 export function getCommentsList({ token }) {
@@ -50,12 +50,14 @@ export function registerUser({ login, password, name }) {
       login,
       password,
       name
-      
+   
     }),
   }).then((response) => {
+    
       if (response.status === 400){
         throw new Error ("Такой пользователь уже существует")
       }
+      
       return response.json()
   });
 }
@@ -72,9 +74,12 @@ export function loginUser({ login, password }) {
     }),
   }).then((response) => {
       if (response.status === 400){
+       
         throw new Error ("Неверный логин или пароль")
       }
+      
       return response.json()
+      
   });
 }
 

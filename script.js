@@ -2,10 +2,10 @@ import { getCommentsList, publicComment } from "./api.js";
 import {getDate,safeInputText,delay} from "./secondaryFunc.js"
 import { renderLoginComponent } from "./login-component.js";
 
- let token = "Bearer asb4c4boc86gasb4c4boc86g37w3cc3bo3b83k4g37k3bk3cg3c03ck4k";
+ let token = null;
  let comments = [];
 
-token = null;
+
 
 // const waitCommentMessage = document.getElementById("waitComment");
 // /* waitCommentMessage.style.display = "inline"; */
@@ -17,6 +17,7 @@ const fetchGetAndRender = () => {
   return getCommentsList({token})
     .then((responseData) => {
       comments = responseData.comments;
+      
       renderComments();
     })
     .catch((error) => {
@@ -51,8 +52,8 @@ const fetchGetAndRender = () => {
 
 
   const commentsHtml =
-  comments.map((user, index) => {
-    return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}"  >
+  comments.map((user, index,) => {
+    return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}" data-id "${user.id}" >
     <div class="comment-header">
       <div>${user.author.name}</div>
       <div>${getDate(user.date)}</div>
@@ -80,6 +81,7 @@ const fetchGetAndRender = () => {
               <div class="add-form">
               
               <input
+              value = ""
                 type="text"
                 id="name-input"
                 class="add-form-name"
@@ -220,13 +222,33 @@ const fetchGetAndRender = () => {
 
   
   // удаление последнего комментария
-  const buttonDeleteElement = document.getElementById("delete-button");
-  buttonDeleteElement.addEventListener("click", () => {
-    const allComments = document.querySelectorAll('.comment')
-        console.log(allComments)
+  function deleteComment(token,comments) {
+
+    return fetch(
+      "https://webdev-hw-api.vercel.app/api/v2/Kerimov-Evgenii/comments/" +
+        comments[comments.length - 1].id,
+      {
+        method: "DELETE",
+
+        headers: {
+          authorization: token,
+        },
+      }
+    ).then((response) => {
+      if (response.status === 404){
+        throw new Error ("Ошибка удаления")
+      }
+      comments.pop();
+      renderComments();
+      return response.json();
+    }).catch(error =>{
+      alert(error.message)
     })
+  }
 
-
+ deleteButtonElement.addEventListener('click', () =>{
+  deleteComment(token, comments);
+ })
 
   //Комментарий на комментарий
  function reComment () {

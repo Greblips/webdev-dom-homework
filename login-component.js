@@ -3,7 +3,9 @@ import {loginUser, registerUser} from './api.js';
 
 export function renderLoginComponent({appEl,comments,setToken,renderComments}){
   let isLoginMode = true;
+
   const renderForm = () => {
+
     const commentsHtml =
     comments.map((user, index) => {
       return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}">
@@ -32,8 +34,8 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
               </ul>
               <p id = 'addingComment' style="display: none">Комментарий добавляется...</p>
               
-
-            <div class="login-form">
+              
+            <div class="login-form" >
               <h2 class="class">Форма ${isLoginMode ? 'входа' : 'Регистрации'}</h2>
               ${
                 isLoginMode
@@ -61,6 +63,7 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
               />
               
               <div class="form-row">
+              
                 <button id="login-button" class="add-form-button"> ${isLoginMode ? 'войти' : 'зарегестрироваться'}</button>
                 <button id="toggle-button" class="add-form-button">
                   Перейти   ${isLoginMode ? 'к регистрации' : 'ко входу'}
@@ -100,7 +103,7 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
            })
       } else {
        
-        const name = document.getElementById('name-input').value;
+         const name = document.getElementById('name-input').value;
         const login = document.getElementById('login-input').value;
         const password = document.getElementById('password-input').value;
         
@@ -123,8 +126,9 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
              login: login,
              password: password,
              name : name,
+             
            }).then ((user) => { 
-                    
+                    console.log(user)
                setToken(`Bearer ${user.user.token}`)
                
                renderComments();
@@ -137,7 +141,10 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
       isLoginMode = !isLoginMode; 
       console.log('click')
       renderForm()
+
     })
+
+
 
   }
 renderForm()
