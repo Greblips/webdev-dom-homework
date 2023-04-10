@@ -4,6 +4,9 @@ import { renderLoginComponent } from "./login-component.js";
 
  let token = null;
  let comments = [];
+ let name;
+
+
 
 
 
@@ -44,6 +47,10 @@ const fetchGetAndRender = () => {
         setToken: (newToken) => {
           token = newToken;
         },
+        setName: (newName) => {
+          name = newName;
+          
+        },
         renderComments,
       });
       return;
@@ -81,11 +88,11 @@ const fetchGetAndRender = () => {
               <div class="add-form">
               
               <input
-              value = ""
+              value = "${name}"
                 type="text"
                 id="name-input"
                 class="add-form-name"
-                placeholder="Введите ваше имя"
+                placeholder="Введите ваше имя" disabled
               />
               <textarea
                 type="textarea"
@@ -105,7 +112,7 @@ const fetchGetAndRender = () => {
 
   appEl.innerHTML = appHtml;
 
-
+  
 // Переменные
   const buttonElement = document.getElementById("add-button");
   const deleteButtonElement = document.getElementById("delete-button");

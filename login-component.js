@@ -1,7 +1,13 @@
 import { getDate } from "./secondaryFunc.js";
 import {loginUser, registerUser} from './api.js';
 
-export function renderLoginComponent({appEl,comments,setToken,renderComments}){
+export function renderLoginComponent({
+  appEl,
+  comments,
+  setToken,
+  renderComments,
+  setName,
+}) {
   let isLoginMode = true;
 
   const renderForm = () => {
@@ -94,7 +100,7 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
              login: login,
              password: password,
            }).then ((user) => { 
-                    
+              setName(user.user.name);    
                setToken(`Bearer ${user.user.token}`)
                
                renderComments();
@@ -128,7 +134,8 @@ export function renderLoginComponent({appEl,comments,setToken,renderComments}){
              name : name,
              
            }).then ((user) => { 
-                    console.log(user)
+               
+               console.log(user.user.name)
                setToken(`Bearer ${user.user.token}`)
                
                renderComments();
