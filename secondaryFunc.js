@@ -1,19 +1,4 @@
 
-
-// функция для даты
-export function getDate(date) {
-  const options = {
-      year: '2-digit',
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-  }
-  const newDate = new Date(date);
-  return newDate.toLocaleString('ru-RU', options).replace(',', '');
-}
-
-
 // Функция обезопасить ввод данных
 export function safeInputText(str) {
     return str.replaceAll("&", "&amp;")

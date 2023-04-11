@@ -2,6 +2,8 @@ const host = "https://webdev-hw-api.vercel.app/api/v2/Kerimov-Evgenii/comments";
 let token = null;
 
 
+
+
 export function getCommentsList({ token }) {
   return fetch(host, {
     method: "GET",
@@ -17,14 +19,14 @@ export function getCommentsList({ token }) {
   });
 }
 
-export function publicComment({ name, text, date, forceError, token }) {
+export function publicComment({ name, text, date, token, likes }) {
   return fetch(host, {
     method: "POST",
     body: JSON.stringify({
       name,
       text,
       date,
-      forceError,
+      likes
     }),
     headers: {
       Authorization: token,
