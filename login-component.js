@@ -1,4 +1,4 @@
-import { getDate } from "./secondaryFunc.js";
+import { formatDate } from './lib/formatDate/formatDate.js';
 import {loginUser, registerUser} from './api.js';
 
 export function renderLoginComponent({
@@ -14,10 +14,11 @@ export function renderLoginComponent({
 
     const commentsHtml =
     comments.map((user, index) => {
+      const date = new Date(user.date)
       return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}">
       <div class="comment-header">
         <div>${user.author.name}</div>
-        <div>${getDate(user.date)}</div>
+        <div>${formatDate(date)}</div>
       </div>
       <div class="comment-body" >
      <div class ="comment-text"> ${user.text} </div>

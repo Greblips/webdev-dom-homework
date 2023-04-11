@@ -1,6 +1,7 @@
 import { getCommentsList, publicComment } from "./api.js";
-import {getDate,safeInputText,delay} from "./secondaryFunc.js"
+import {safeInputText,delay} from "./secondaryFunc.js"
 import { renderLoginComponent } from "./login-component.js";
+import { formatDate } from "./lib/formatDate/formatDate.js";
 
  let token = null;
  let comments = [];
@@ -44,6 +45,7 @@ const fetchGetAndRender = () => {
       renderLoginComponent({
         comments,
         appEl,
+       
         setToken: (newToken) => {
           token = newToken;
         },
@@ -60,10 +62,11 @@ const fetchGetAndRender = () => {
 
   const commentsHtml =
   comments.map((user, index,) => {
-    return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}" data-id "${user.id}" >
+    const date = new Date(user.date)
+    return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}" data-id="${user.id}" >
     <div class="comment-header">
       <div>${user.author.name}</div>
-      <div>${getDate(user.date)}</div>
+      <div>${formatDate(date)}</div>
     </div>
     <div class="comment-body" data-comments="${index}" >
    <div class ="comment-text"> ${user.text} </div>
@@ -142,7 +145,7 @@ const fetchGetAndRender = () => {
     publicComment({
       name: safeInputText(nameInputElement.value),
       text: safeInputText(textInputElement.value),
-      date: new Date(),
+      date: formatDate(new Date()),
       forceError: true,
       token,
     })
@@ -174,6 +177,21 @@ const fetchGetAndRender = () => {
 
     renderComments();
   });
+  function setData(btn){
+    let objComment 
+    const id = btn.closest('.comment').dataset.id
+    comments.forEach(item => item.id === id ? objComment = item : item)
+    const response = fetch(`https://webdev-hw-api.vercel.app/api/v2/Kerimov-Evgenii/comments/${id}/toggle-like`, {
+      method: 'POST',
+      body : JSON.stringify(objComment),
+      headers : {
+        authorization : token
+      }
+    }).then(data => data.json()).then(data => {
+      console.log(data)
+    })
+    
+  }
 
   function addLike () {
   
@@ -183,8 +201,8 @@ const fetchGetAndRender = () => {
         event.stopPropagation()
             const index = likeButton.dataset.heart;
             likeButton.classList.add('-loading-like')
+            setData(likeButton)
             delay(2000).then(()=> {
-             
               if (!comments[index].isLiked) {
                 comments[index].isLiked = true;
                 comments[index].likes +=1;
