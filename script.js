@@ -1,7 +1,8 @@
 import { getCommentsList, publicComment } from "./api.js";
 import {safeInputText,delay} from "./secondaryFunc.js"
 import { renderLoginComponent } from "./login-component.js";
-import { formatDate } from "./lib/formatDate/formatDate.js";
+import { format } from "date-fns"
+
 
  let token = null;
  let comments = [];
@@ -66,7 +67,7 @@ const fetchGetAndRender = () => {
     return `<li class="comment"  data-name="${user.author.name}" data-comment="${user.text}" data-id="${user.id}" >
     <div class="comment-header">
       <div>${user.author.name}</div>
-      <div>${formatDate(date)}</div>
+      <div>${format(date, "yyyy-dd-MM hh:mm:ss")}</div>
     </div>
     <div class="comment-body" data-comments="${index}" >
    <div class ="comment-text"> ${user.text} </div>
@@ -145,7 +146,7 @@ const fetchGetAndRender = () => {
     publicComment({
       name: safeInputText(nameInputElement.value),
       text: safeInputText(textInputElement.value),
-      date: formatDate(new Date()),
+      date: new Date(),
       forceError: true,
       token,
     })
